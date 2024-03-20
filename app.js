@@ -1,16 +1,20 @@
 const express = require("express");
 const app = express();
-const morgan = require("morgan")
+const morgan = require("morgan");
 
-// bring in routes
-const postRoutes = require('./routes/post')
-
-// middleware
+// Middleware for logging requests
 app.use(morgan("dev"));
 
-app.use("/", postRoutes);
+// Middleware for parsing JSON bodies
+app.use(express.json());
 
-const port = 8080
-app.listen(port,()=>{
-    console.log('A Node Js API is listening on port: '+port)
+// Bring in routes
+const postRoutes = require('./routes/post');
+
+// Routes
+app.use("/api/", postRoutes);
+
+const port = 8080;
+app.listen(port, () => {
+    console.log('A Node Js API is listening on port: ' + port);
 });
