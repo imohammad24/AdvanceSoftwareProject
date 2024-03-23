@@ -2,11 +2,11 @@ const mysql = require('mysql2');
 
 // Create MySQL connection pool
 const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: '127.0.0.1',
-  user: 'root',
-  password: '100200300nj',
-  database: 'communicraftdb'
+    connectionLimit: 10,
+    host: '127.0.0.1',
+    user: 'root',
+    password: '100200300nj',
+    database: 'communicraftdb'
 });
 
 // Function to authenticate and authorize database access
@@ -20,14 +20,14 @@ function authenticateAndAuthorize(user, callback) {
 
 // Controller function to create a new project
 exports.createProject = async (req, res) => {
-  authenticateAndAuthorize(req.user, isAuthenticated => {
+    authenticateAndAuthorize(req.user, isAuthenticated => {
         if (!isAuthenticated) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
         try {
-            const { title, description, difficulty_level, group_size } = req.body;
-            pool.query('INSERT INTO projects (title, description, difficulty_level, group_size) VALUES (?, ?, ?, ?)', [title, description, difficulty_level, group_size], (error, results) => {
+            const { title, description, difficulty_level, group_size, skills_required, materials_required, status } = req.body;
+            pool.query('INSERT INTO projects (title, description, difficulty_level, group_size, skills_required, materials_required, status) VALUES (?, ?, ?, ?, ?, ?, ?)', [title, description, difficulty_level, group_size, skills_required, materials_required, status], (error, results) => {
                 if (error) {
                     return res.status(500).json({ error: 'Could not create project' });
                 }
@@ -41,7 +41,7 @@ exports.createProject = async (req, res) => {
 
 // Controller function to get all projects
 exports.getAllProjects = async (req, res) => {
-  authenticateAndAuthorize(req.user, isAuthenticated => {
+    authenticateAndAuthorize(req.user, isAuthenticated => {
         if (!isAuthenticated) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
@@ -61,7 +61,7 @@ exports.getAllProjects = async (req, res) => {
 
 // Controller function to get project by ID
 exports.getProjectByID = async (req, res) => {
-  authenticateAndAuthorize(req.user, isAuthenticated => {
+    authenticateAndAuthorize(req.user, isAuthenticated => {
         if (!isAuthenticated) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
@@ -85,15 +85,15 @@ exports.getProjectByID = async (req, res) => {
 
 // Controller function to update project by ID
 exports.updateProject = async (req, res) => {
-  authenticateAndAuthorize(req.user, isAuthenticated => {
+    authenticateAndAuthorize(req.user, isAuthenticated => {
         if (!isAuthenticated) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
         try {
-            const { title, description, difficulty_level, group_size } = req.body;
+            const { title, description, difficulty_level, group_size, skills_required, materials_required, status } = req.body;
             const projectId = req.params.id;
-            pool.query('UPDATE projects SET title = ?, description = ?, difficulty_level = ?, group_size = ? WHERE project_id = ?', [title, description, difficulty_level, group_size, projectId], (error, results) => {
+            pool.query('UPDATE projects SET title = ?, description = ?, difficulty_level = ?, group_size = ?, skills_required = ?, materials_required = ?, status = ? WHERE project_id = ?', [title, description, difficulty_level, group_size, skills_required, materials_required, status, projectId], (error, results) => {
                 if (error) {
                     return res.status(500).json({ error: 'Could not update project' });
                 }
@@ -110,7 +110,7 @@ exports.updateProject = async (req, res) => {
 
 // Controller function to delete project by ID
 exports.deleteProject = async (req, res) => {
-  authenticateAndAuthorize(req.user, isAuthenticated => {
+    authenticateAndAuthorize(req.user, isAuthenticated => {
         if (!isAuthenticated) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
@@ -130,4 +130,19 @@ exports.deleteProject = async (req, res) => {
             res.status(500).json({ error: 'Could not delete project' });
         }
     });
+};
+
+// get all projects by difficulty level
+exports.getProjectsByDifficulty = async (req, res) => {
+    try {
+        const difficultyLevel = req.params.difficultyLevel;
+        pool.query('SELECT * FROM projects WHERE difficulty_level = ?', [difficultyLevel], (error, results) => {
+            if (error) {
+                return res.status(500).json({ error: 'Could not retrieve projects' });
+            }
+            res.json(results);
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Could not retrieve projects' });
+    }
 };

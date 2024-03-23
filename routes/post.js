@@ -15,6 +15,7 @@ router.get('/users/:id', userController.getUserById);
 router.post('/users/', userController.createUser);
 router.put('/users/:id', userController.updateUser);
 router.delete('/users/:id', userController.deleteUser);
+router.get('/profile/:userId', userController.getUserProfile);
 
 //////// meterial routes
 router.get('/materials/', materialController.getAllMaterials);
@@ -30,6 +31,8 @@ router.get('/projects/:id', projectController.getProjectByID);
 router.post('/projects/', projectController.createProject);
 router.put('/projects/:id', projectController.updateProject);
 router.delete('/projects/:id', projectController.deleteProject);
+router.get('/projects/difficulty/:difficultyLevel', projectController.getProjectsByDifficulty);
+
 
 
 //////// skill routes

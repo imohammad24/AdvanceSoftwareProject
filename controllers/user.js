@@ -104,3 +104,38 @@ exports.deleteUser = (req, res) => {
         });
     });
 };
+
+exports.getUserProfile = async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        // Fetch user profile information including username and email
+        pool.query('SELECT username, email FROM Users WHERE user_id = ?', [userId], (error, userResults) => {
+            if (error) {
+                return res.status(500).json({ error: 'Could not retrieve user profile' });
+            }
+
+            if (userResults.length === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Fetch user's skills
+            pool.query('SELECT s.skill_name FROM Skills s INNER JOIN User_Skills us ON s.skill_id = us.skill_id WHERE us.user_id = ?', [userId], (error, skillResults) => {
+                if (error) {
+                    return res.status(500).json({ error: 'Could not retrieve user skills' });
+                }
+
+                // Combine user profile information with skills
+                const userProfile = {
+                    username: userResults[0].username,
+                    email: userResults[0].email,
+                    skills: skillResults.map(skill => skill.skill_name)
+                };
+
+                res.json(userProfile);
+            });
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Could not retrieve user profile' });
+    }
+};
