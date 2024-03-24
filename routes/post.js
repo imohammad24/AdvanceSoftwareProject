@@ -6,6 +6,8 @@ const skillController = require('../controllers/skill');
 const userMaterialController = require('../controllers/userMaterial');
 const userProjectController = require('../controllers/userProject');
 const userSkillController = require('../controllers/userSkill');
+const chatController = require('../controllers/chat');
+const ticketController = require('../controllers/ticket');
 
 const router = express.Router();
 
@@ -59,6 +61,18 @@ router.delete('/user/:user_id/projects/:project_id', userProjectController.delet
 router.post('/user/skills', userSkillController.addSkillToUser);
 router.get('/user/:user_id/skills', userSkillController.getSkillsByUser);
 router.delete('/user/:user_id/skills/:skill_id', userSkillController.deleteSkillFromUser);
+
+// Chat routes
+router.post('/chat', chatController.storeMessage);
+router.get('/chat/all', chatController.getAllMessages); 
+router.get('/chat/recent', chatController.getRecentMessages); 
+router.post('/chat/shareMaterials', chatController.shareMaterials);
+router.post('/chat/shareCompletedProjects', chatController.shareCompletedProjects);
+
+// tickets routes
+router.post('/ticket', ticketController.createTicket);  
+router.get('/ticket', ticketController.getAllTickets);  
+router.delete('/ticket/:message_id', ticketController.deleteTicket);
 
 
 module.exports = router;
